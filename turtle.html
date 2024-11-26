@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Turtle</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: white;
+            margin: 20px;
+        }
+        .instructions {
+            margin: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Web Turtle Drawing</h1>
+    <div class="instructions">
+        Use arrow keys to move the turtle
+    </div>
+    <canvas id="turtleCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('turtleCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Turtle state
+        const turtle = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            angle: 0,
+            isDrawing: true,
+            stepSize: 5
+        };
+
+        // Draw turtle
+        function drawTurtle() {
+            ctx.save();
+            ctx.translate(turtle.x, turtle.y);
+            ctx.rotate(turtle.angle * Math.PI / 180);
+            
+            // Draw triangle for turtle
+            ctx.beginPath();
+            ctx.moveTo(0, -10);
+            ctx.lineTo(-7, 10);
+            ctx.lineTo(7, 10);
+            ctx.closePath();
+            ctx.fillStyle = 'green';
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // Clear and redraw
+        function redraw() {
+            // Don't clear the canvas to keep the drawing
+            drawTurtle();
+        }
+
+        // Move the turtle
+        function moveTurtle(direction) {
+            const oldX = turtle.x;
+            const oldY = turtle.y;
+            
+            switch(direction) {
+                case 'up':
+                    turtle.x += Math.sin(turtle.angle * Math.PI / 180) * turtle.stepSize;
+                    turtle.y -= Math.cos(turtle.angle * Math.PI / 180) * turtle.stepSize;
+                    break;
+                case 'down':
+                    turtle.x -= Math.sin(turtle.angle * Math.PI / 180) * turtle.stepSize;
+                    turtle.y += Math.cos(turtle.angle * Math.PI / 180) * turtle.stepSize;
+                    break;
+                case 'left':
+                    turtle.angle -= 10;
+                    break;
+                case 'right':
+                    turtle.angle += 10;
+                    break;
+            }
+            
+            // Draw line if moving and pen is down
+            if (turtle.isDrawing && (direction === 'up' || direction === 'down')) {
+                ctx.beginPath();
+                ctx.moveTo(oldX, oldY);
+                ctx.lineTo(turtle.x, turtle.y);
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+            }
+            
+            redraw();
+        }
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'ArrowUp':
+                    moveTurtle('up');
+                    break;
+                case 'ArrowDown':
+                    moveTurtle('down');
+                    break;
+                case 'ArrowLeft':
+                    moveTurtle('left');
+                    break;
+                case 'ArrowRight':
+                    moveTurtle('right');
+                    break;
+            }
+        });
+
+        // Initial draw
+        drawTurtle();
+    </script>
+</body>
+</html>
